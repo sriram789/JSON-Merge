@@ -58,22 +58,34 @@ var counter = 1
 var outputFileName = testFolder+outputBaseFileName+counter+".json"
 
 fs.readdir(testFolder, (err, files) => {
+    //Storing the first JSON object in first output file
    fs.appendFileSync(outputFileName,fs.readFileSync(testFolder+files[1]))
   files.forEach(file => {
     if(file.localeCompare('.DS_Store') != 0 && files[1].localeCompare(file) != 0){
+        //Allowing only the files which has prefix same as inputbasefilename
         if(file.indexOf(inputBaseFileName) != -1){
+            //Ensuring that the outputfile doesn't exceed the maxFileSize
             if(getFilesizeInBytes(outputFileName)+getFilesizeInBytes(testFolder+file) < maxFileSize){
+                //Reading the data from outputfile
                 rawdata1 = fs.readFileSync(outputFileName);
+                //Converting the text data to JSON format
                 data1 = JSON.parse(rawdata1);
+                //Reading the data from the next JSON file
                 rawdata2 = fs.readFileSync(testFolder+file);
+                //Converting the data to JSON format
                 data2 = JSON.parse(rawdata2);
+
+                //Merging the Two JSON objects and converting to string format
                 var json = JSON.stringify(merge(data1, data2));
+
+                //Storing the Converted JSON object in the output file
                 if(counter == 1)
                     fs.writeFileSync(outputFileName,json);
                 else
                     fs.appendFileSync(outputFileName, json);
             }
             else{
+                //if if exceeds the maxFileSize,increament the counter
                 counter= counter+1
                 outputFileName = testFolder+outputBaseFileName+counter+".json"
                 rawdata2 = fs.readFileSync(testFolder+file);
